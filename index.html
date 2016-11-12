@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网页定位导航特效</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        body{
+            font-size: 12px;
+        }
+
+        li{
+            list-style: none;
+        }
+
+        #content{
+            width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #content h1{
+            color: deepskyblue;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        #content .item{
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px dotted gray;
+        }
+
+        #content .item h2{
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid lightblue;
+            margin-bottom: 10px;
+            padding-bottom: 2px;
+        }
+
+        #content .item li{
+            display: inline;
+            margin: 0 5px;
+            line-height: 25px;
+        }
+
+        #content .item li img{
+            width: 175px;
+            height: 140px;
+            border: none;
+        }
+
+        #menu{
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: 400px;
+            border: 1px solid darkgray;
+            border-radius: 5px 5px;
+            background: papayawhip;
+        }
+
+        #menu ul li a{
+            display: block;
+            margin: 5px 0px;
+            font-size: 12px;
+            font-weight: bold;
+            color: crimson;
+            width: 50px;
+            height: 30px;
+            line-height:25px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        #menu ul li a:hover,#menu ul .current a{
+            color: white;
+            background-color: deepskyblue;
+        }
+
+        #header{
+            height: 100px;
+        }
+
+        #fotter{
+            height: 100px;
+        }
+
+
+    </style>
+    <script src="jquery-3.1.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            //点击导航条滚动页面(获取导航条id截取需要滚动到的itemid,滚到到该item)
+            $('#scrollTo').click(function(event){
+                //console.log(event.target.parentNode.id);
+                console.log(event.target.parentNode.id.split('scroll2')[1]);
+                var toItemId = event.target.parentNode.id.split('scroll2')[1];
+                var toItem = $('#'+toItemId);
+                //console.log(toItem);
+                $('html,body').stop().animate({scrollTop:toItem.offset().top},800);
+
+            });
+            //当滚动条发生滚动时
+            $(window).scroll(function(){
+                var scroll_top = $(document).scrollTop();
+                //console.log(scroll_top);
+                var menu = $('#menu');
+                var items = $('#content').find('.item');
+                var currentItemId = '';//当前楼层(item)的id => #id
+                items.each(function(){
+                    //遍历items，每个item都执行一次下面的代码
+                    var i = $(this);
+                    var itemTop = i.offset().top;
+                    //console.log(itemTop);
+                    //如果当前滚动条的高度大于当前的item，
+                    //即表示当前滚动到该item楼层或更高的楼层。
+                    if(scroll_top > (itemTop - ( $(window).height())*0.3) ){
+                        //特地减掉一点窗口高度是让楼层在中间时是就认为到达次层，
+                        //而不必让楼层在窗口顶部才算到达此层，优化体验。
+
+                        //(经过多(items个数)次的遍历可以得到最终所在楼层)
+                        currentItemId = i.attr('id');
+                        //item1、item2...
+                        //给menu相应的楼层添加current和取消其它楼层的current
+                        var currentItem = menu.find('.current');
+                        if(currentItemId && currentItem.attr('id') != ('scroll2'+currentItemId)){
+                            //'scroll2'+currentItemId => scroll2item1、scroll2item2...
+                            //如果获取到当前楼层，且获取到的楼层与当前楼层不一致，才执行。
+
+                            //可以先删掉current再添加current
+                            //currentItem.removeClass('current');
+                            //menu.find('[href="'+ currentItemId +'"]').addClass('current');
+
+                            //也可以添加current然后删掉所有兄弟节点的current
+                            menu.find('[id="'+ 'scroll2'+ currentItemId +'"]').addClass('current').siblings().removeClass('current');
+                        }
+                    }else{//如果找到楼层，直接跳出，下面的就不继续遍历了
+                        return false;
+                    }
+                })
+            });
+        });
+    </script>
+</head>
+<body>
+<div id="header">
+
+</div>
+<div id="menu">
+    <ul id="scrollTo">
+        <li id='scroll2item1' class='current'><a href="javascript:;">一楼</a></li>
+        <li id="scroll2item2"><a href="javascript:;">二楼</a></li>
+        <li id="scroll2item3"><a href="javascript:;">三楼</a></li>
+        <li id="scroll2item4"><a href="javascript:;">四楼</a></li>
+        <li id="scroll2header"><a href="javascript:;">返回顶部</a></li>
+    </ul>
+</div>
+<div id="content">
+    <h1>网页定位导航特效</h1>
+    <div id="item1" class="item">
+        <h2>这里是一楼</h2>
+        <ul>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div id="item2" class="item">
+        <h2>这里是二楼</h2>
+        <ul>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div id="item3" class="item">
+        <h2>这里是三楼</h2>
+        <ul>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div id="item4" class="item">
+        <h2>这里是四楼</h2>
+        <ul>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+</div>
+<div id="fotter">
+
+</div>
+</body>
+</html>
