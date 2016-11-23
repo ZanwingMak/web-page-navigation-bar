@@ -90,24 +90,41 @@
         #fotter{
             height: 100px;
         }
+		
+		#scroll2header{
+			display:none;			
+		}
 
 
     </style>
     <script src="jquery-3.1.1.min.js"></script>
     <script>
         $(document).ready(function(){
+			checkScroll2Top();
+			checkScroll();
+            //当滚动条发生滚动时
+            $(window).scroll(checkScroll);
+						
             //点击导航条滚动页面(获取导航条id截取需要滚动到的itemid,滚到到该item)
             $('#scrollTo').click(function(event){
                 //console.log(event.target.parentNode.id);
-                console.log(event.target.parentNode.id.split('scroll2')[1]);
+                //console.log(event.target.parentNode.id.split('scroll2')[1]);
                 var toItemId = event.target.parentNode.id.split('scroll2')[1];
                 var toItem = $('#'+toItemId);
                 //console.log(toItem);
                 $('html,body').stop().animate({scrollTop:toItem.offset().top},800);
 
             });
-            //当滚动条发生滚动时
-            $(window).scroll(function(){
+        });
+			function checkScroll2Top(){
+				if($(document).scrollTop() >= $(document).height()/3){
+					$('#scroll2header').stop().show();
+				}else{
+					$('#scroll2header').stop().hide();
+				}
+			}
+			function checkScroll(){
+				checkScroll2Top();
                 var scroll_top = $(document).scrollTop();
                 //console.log(scroll_top);
                 var menu = $('#menu');
@@ -143,9 +160,8 @@
                     }else{//如果找到楼层，直接跳出，下面的就不继续遍历了
                         return false;
                     }
-                })
-            });
-        });
+                });
+            }
     </script>
 </head>
 <body>
