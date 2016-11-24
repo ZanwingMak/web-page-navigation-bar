@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网页定位导航特效</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        body{
+            font-size: 12px;
+        }
+
+        li{
+            list-style: none;
+        }
+
+        #content{
+            width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        #content h1{
+            color: deepskyblue;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        #content .item{
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px dotted gray;
+        }
+
+        #content .item h2{
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid lightblue;
+            margin-bottom: 10px;
+            padding-bottom: 2px;
+        }
+
+        #content .item li{
+            display: inline;
+            margin: 0 5px;
+            line-height: 25px;
+        }
+
+        #content .item li img{
+            width: 175px;
+            height: 140px;
+            border: none;
+        }
+
+        #menu{
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: 400px;
+            border: 1px solid darkgray;
+            border-radius: 5px 5px;
+            background: papayawhip;
+        }
+
+        #menu ul li a{
+            display: block;
+            margin: 5px 0px;
+            font-size: 12px;
+            font-weight: bold;
+            color: crimson;
+            width: 50px;
+            height: 30px;
+            line-height:25px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        #menu ul li a:hover,#menu ul .current a{
+            color: white;
+            background-color: deepskyblue;
+        }
+
+        #header{
+            height: 100px;
+        }
+
+        #fotter{
+            height: 100px;
+        }
+		
+		#scroll2header{
+			display:none;			
+		}
+
+    </style>
+    <script>
+    /*使用原生js写法*/
+
+    /*扩展实现添加或删除class方法*/
+
+    //检测是否已经有这个类
+    function hasClass(obj,cls){
+        return obj.className.match(new RegExp("(\\s|^)" + cls + "(\\s|$)"));
+    }
+    //删除类
+    function removeClass(obj,cls){
+        if(hasClass(obj,cls)){
+            var reg = new RegExp("(\\s|^)" + cls + "(\\s|$)");
+            obj.className = obj.className.replace(reg,'');
+        }
+    }
+    //添加类
+    function addClass(obj,cls){
+        if(!hasClass(obj,cls)){
+            obj.className += ' ' + cls;
+        }
+    }
+
+
+    window.onload = function(){
+		function checkScroll2Top(){
+			var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+			var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+			var scroll2header = document.getElementById('scroll2header');
+			if(scrollTop >= scrollHeight/3){
+				scroll2header.style.display = 'block';
+			}else{
+				scroll2header.style.display = 'none';
+			}
+		}		
+		function checkScroll(){
+			checkScroll2Top();
+            var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            //console.log(scrollTop);
+            var menus = document.getElementById('menu');
+            var items = document.getElementById('content').getElementsByClassName('item');
+            var currentItemId = '';
+			var timer1 = null;
+			var timer2 = null;
+            for(var i=0;i<items.length;i++){
+                var _item = items[i];
+                var _itemTop = _item.offsetTop;
+                if(scrollTop > _itemTop - document.documentElement.clientHeight*0.3){
+                    currentItemId = _item.id;
+                }else{
+                    break;
+                }
+            }
+			var currentItem = menus.getElementsByClassName('current')[0];
+            if(currentItemId && currentItem.id != ('scroll2'+currentItemId)){
+                /*for(var j=0;j<menus.length;j++){
+                    var _menu = menus[j];
+                    //console.log(_menu.getElementsByTagName('a')[0]);
+                    var _href = _menu.getElementsByTagName('a')[0].href.split("#");
+                    //因为通过_menu.href来获取的链接是个长连接，会自动补充域名，
+                    // 如127.0.0.1/index.html#abc,jQuery的attr()是属性里写的什么获取的就是什么。
+                    if(_href[_href.length-1] != currentItemId){
+                        removeClass(_menu,'current');
+                    }else{
+                        addClass(_menu,'current');
+                    }
+                }*/
+				removeClass(currentItem,'current');
+				var newCurrentItem = document.getElementById('scroll2'+currentItemId);
+				addClass(newCurrentItem,'current');
+				
+            }
+			document.getElementById('scroll2header').onclick = function(){
+				timer1 = setInterval(function(){
+					var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+					var speed = Math.ceil(scrollTop/4);
+					document.documentElement.scrollTop = document.body.scrollTop = scrollTop - speed;					
+					if((document.documentElement.scrollTop || document.body.scrollTop) == 0){
+							clearInterval(timer1);
+					}
+					/* 
+					 * 滚轮事件只有firefox比较特殊，使用DOMMouseScroll; 其他浏览器使用mousewheel;
+					 * 
+					*/
+					// firefox
+					document.body.addEventListener("DOMMouseScroll", function(event) {
+						//var direction= event.detail && (event.detail > 0 ? "mousedown" : "mouseup");
+						//console.log(direction);    
+						clearInterval(timer1);
+					});
+					// chrome and ie
+					document.body.onmousewheel = function (event) {
+						//event = event || window.event;
+						//var direction = event.wheelDelta && (event.wheelDelta > 0 ? "mouseup" : "mousedown");
+						//console.log(direction);
+						clearInterval(timer1);
+					};
+				},50);
+			}
+			
+            //点击导航条滚动页面(获取导航条id截取需要滚动到的itemid,滚到到该item)
+			var scrollTo = document.getElementById('scrollTo');
+			var toItemId = '';
+			var flag = true;
+            scrollTo.onclick = function(event){				
+				if(event.target.parentNode.id.split('scroll2')[1] != undefined){
+					toItemId = event.target.parentNode.id.split('scroll2')[1];
+					//console.log(toItemId);
+					var toItem = document.getElementById(toItemId);
+					var toItemTop = toItem.offsetTop;
+					if(timer2 != null){
+						clearInterval(timer2);
+					}
+					timer2 = null;
+					if(flag){
+					// 监听滚轮事件，当动画执行时，用户进行滚轮操作会中断动画。	
+						flag = false;	
+						timer2 = setInterval(function(){
+							var speed = 10;
+							toItemTop = Math.ceil(toItemTop);
+							if(document.documentElement.scrollTop || document.body.scrollTop < toItemTop){
+								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(document.documentElement.scrollTop || document.body.scrollTop + speed);
+								if((toItemTop - document.documentElement.scrollTop || document.body.scrollTop) < speed){
+										clearInterval(timer2);
+										//flag = true;
+									}
+							}
+							if(document.documentElement.scrollTop || document.body.scrollTop > toItemTop){
+								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(document.documentElement.scrollTop || document.body.scrollTop - speed);
+								if((document.documentElement.scrollTop || document.body.scrollTop - toItemTop) < speed){
+										clearInterval(timer2);
+										//flag = true;
+									}
+							}
+							//console.log(document.documentElement.scrollTop || document.body.scrollTop);
+							//console.log(toItemTop);
+							/* 
+							 * 滚轮事件只有firefox比较特殊，使用DOMMouseScroll; 其他浏览器使用mousewheel;
+							 * 
+							*/
+							// firefox
+							document.body.addEventListener("DOMMouseScroll", function(event) {
+								//var direction= event.detail && (event.detail > 0 ? "mousedown" : "mouseup");
+								//console.log(direction);    
+								clearInterval(timer2);
+							});
+							// chrome and ie
+							document.body.onmousewheel = function (event) {
+								//event = event || window.event;
+								//var direction = event.wheelDelta && (event.wheelDelta > 0 ? "mouseup" : "mousedown");
+								//console.log(direction);
+								clearInterval(timer2);
+							};
+						},1);
+						
+					}
+				}
+            }
+		}
+		
+		///////
+			checkScroll2Top();
+        window.onscroll = function(){
+			checkScroll2Top();
+			checkScroll();
+		}
+    }
+    
+    </script>
+</head>
+<body>
+<div id="header">
+
+</div>
+<div id="menu">
+    <ul id="scrollTo">
+        <li id='scroll2item1' class='current'><a href="javascript:;">一楼</a></li>
+        <li id="scroll2item2"><a href="javascript:;">二楼</a></li>
+        <li id="scroll2item3"><a href="javascript:;">三楼</a></li>
+        <li id="scroll2item4"><a href="javascript:;">四楼</a></li>
+        <li id="scroll2header"><a href="javascript:;">返回顶部</a></li>
+    </ul>
+</div>
+<div id="content">
+    <h1>网页定位导航特效</h1>
+    <div id="item1" class="item">
+        <h2>这里是一楼</h2>
+        <ul>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="1f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div id="item2" class="item">
+        <h2>这里是二楼</h2>
+        <ul>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="2f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div id="item3" class="item">
+        <h2>这里是三楼</h2>
+        <ul>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="3f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+    <div id="item4" class="item">
+        <h2>这里是四楼</h2>
+        <ul>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+            <li><a href="#"><img src="4f.jpg" alt=""></a></li>
+        </ul>
+    </div>
+</div>
+<div id="fotter">
+
+</div>
+</body>
+</html>
