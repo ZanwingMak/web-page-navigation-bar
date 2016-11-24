@@ -1,9 +1,10 @@
 # web-page-navigation-bar
 网页定位导航条
 
-blog：https://gfwboom.com/archives/code/jQuery/2016/11/13/jquery-web-navigation.html
+Blog：https://gfwboom.com/archives/code/jQuery/2016/11/13/jquery-web-navigation.html
 
-demo：
+Demo：
+
 jQuery：http://demo.gfwboom.com/jquery/网页定位导航/jquery.html
 
 JavaScript：http://demo.gfwboom.com/jquery/网页定位导航/javascript.html
