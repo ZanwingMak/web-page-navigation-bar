@@ -206,9 +206,7 @@
 					//console.log(toItemId);
 					var toItem = document.getElementById(toItemId);
 					var toItemTop = toItem.offsetTop;
-					if(timer2 != null){
-						clearInterval(timer2);
-					}
+					clearInterval(timer2);
 					timer2 = null;
 					if(flag){
 					// 监听滚轮事件，当动画执行时，用户进行滚轮操作会中断动画。	
@@ -216,22 +214,32 @@
 						timer2 = setInterval(function(){
 							var speed = 10;
 							toItemTop = Math.ceil(toItemTop);
-							if(document.documentElement.scrollTop || document.body.scrollTop < toItemTop){
-								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(document.documentElement.scrollTop || document.body.scrollTop + speed);
-								if((toItemTop - document.documentElement.scrollTop || document.body.scrollTop) < speed){
-										clearInterval(timer2);
-										flag = true;
-									}
+							var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+							if(scrollTop < toItemTop){
+								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(scrollTop) + speed;
+								if( scrollTop==toItemTop || (toItemTop-scrollTop)<speed ){
+									clearInterval(timer2);
+									flag = true;
+								}
+							}							
+							if(scrollTop > toItemTop){
+								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(scrollTop) - speed;
+								if( scrollTop==toItemTop || (scrollTop-toItemTop)<speed ){
+									clearInterval(timer2);
+									flag = true;
+								}
 							}
-							if(document.documentElement.scrollTop || document.body.scrollTop > toItemTop){
-								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(document.documentElement.scrollTop || document.body.scrollTop - speed);
-								if((document.documentElement.scrollTop || document.body.scrollTop - toItemTop) < speed){
-										clearInterval(timer2);
-										flag = true;
-									}
+							if(scrollTop==toItemTop){
+								clearInterval(timer2);
+								flag = true;
 							}
-							//console.log(document.documentElement.scrollTop || document.body.scrollTop);
-							//console.log(toItemTop);
+							if(((document.documentElement.scrollTop || document.body.scrollTop)+document.documentElement.clientHeight)==document.documentElement.scrollHeight){
+								//滚动条到底了
+								clearInterval(timer2);
+								flag = true;
+							}
+							//console.log('目标：'+scrollTop);
+							//console.log('目前：'+toItemTop);
 							/* 
 							 * 滚轮事件只有firefox比较特殊，使用DOMMouseScroll; 其他浏览器使用mousewheel;
 							 * 
