@@ -200,7 +200,7 @@
 			var scrollTo = document.getElementById('scrollTo');
 			var toItemId = '';
 			var flag = true;
-            scrollTo.onclick = function(event){				
+            scrollTo.onclick = function(event){	
 				if(event.target.parentNode.id.split('scroll2')[1] != undefined){
 					toItemId = event.target.parentNode.id.split('scroll2')[1];
 					//console.log(toItemId);
@@ -220,14 +220,14 @@
 								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(document.documentElement.scrollTop || document.body.scrollTop + speed);
 								if((toItemTop - document.documentElement.scrollTop || document.body.scrollTop) < speed){
 										clearInterval(timer2);
-										//flag = true;
+										flag = true;
 									}
 							}
 							if(document.documentElement.scrollTop || document.body.scrollTop > toItemTop){
 								document.documentElement.scrollTop = document.body.scrollTop = Math.ceil(document.documentElement.scrollTop || document.body.scrollTop - speed);
 								if((document.documentElement.scrollTop || document.body.scrollTop - toItemTop) < speed){
 										clearInterval(timer2);
-										//flag = true;
+										flag = true;
 									}
 							}
 							//console.log(document.documentElement.scrollTop || document.body.scrollTop);
@@ -258,6 +258,7 @@
 		
 		///////
 			checkScroll2Top();
+			checkScroll();
         window.onscroll = function(){
 			checkScroll2Top();
 			checkScroll();
