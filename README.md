@@ -3,7 +3,8 @@
 
 Blog：https://gfwboom.com/archives/code/jQuery/2016/11/13/jquery-web-navigation.html
 
-Demo：
+
+【Demo】
 
 jQuery：http://demo.gfwboom.com/jquery/网页定位导航/jquery.html
 
